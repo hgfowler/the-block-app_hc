@@ -26,7 +26,7 @@ struct InventoryView: View {
                         LazyVGrid(columns: columns, spacing: 16) {
                             ForEach(viewModel.vehicles) { vehicle in
                                 NavigationLink {
-                                    VehicleDetailView(vehicle: vehicle)
+                                    VehicleDetailView(vehicle: vehicle, bidStore: bidStore)
                                 } label: {
                                     VehicleCardView(
                                         vehicle: vehicle,
