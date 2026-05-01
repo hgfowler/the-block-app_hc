@@ -25,9 +25,10 @@ class VehicleDetailViewModel: ObservableObject {
     }
 
     func placeBid() {
+        didPlaceBid = false
+
         guard hasAuctionStarted else {
             bidError = "Bidding has not opened yet"
-            didPlaceBid = false
             return
         }
 

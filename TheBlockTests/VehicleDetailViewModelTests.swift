@@ -105,6 +105,19 @@ final class VehicleDetailViewModelTests: XCTestCase {
         XCTAssertFalse(viewModel.didPlaceBid)
     }
 
+    func testInvalidBidClearsPreviousSuccess() {
+        viewModel.bidInput = "\(minimum + 500)"
+        viewModel.placeBid()
+        XCTAssertTrue(viewModel.didPlaceBid)
+
+        let newMinimum = bidStore.state(for: vehicle.id)?.currentBid ?? minimum
+        viewModel.bidInput = "\(newMinimum)"
+        viewModel.placeBid()
+
+        XCTAssertNotNil(viewModel.bidError)
+        XCTAssertFalse(viewModel.didPlaceBid)
+    }
+
     // MARK: - Reset
 
     func testResetBidStatusClearsErrorAndSuccess() {
