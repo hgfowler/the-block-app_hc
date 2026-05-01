@@ -20,9 +20,22 @@ struct InventoryView: View {
                         description: Text(error)
                     )
                 } else if viewModel.vehicles.isEmpty && !viewModel.baseVehicles.isEmpty {
-                    ContentUnavailableView.search(text: viewModel.searchText)
+                    VStack(spacing: 0) {
+                        filterBar
+                        if viewModel.hasActiveFilters {
+                            ContentUnavailableView(
+                                "No Matching Vehicles",
+                                systemImage: "line.3.horizontal.decrease.circle",
+                                description: Text("Try changing your search or filters.")
+                            )
+                        } else {
+                            ContentUnavailableView.search(text: viewModel.searchText)
+                        }
+                    }
                 } else {
                     ScrollView {
+                        filterBar
+
                         LazyVGrid(columns: columns, spacing: 16) {
                             ForEach(viewModel.vehicles) { vehicle in
                                 NavigationLink {
@@ -57,5 +70,51 @@ struct InventoryView: View {
             }
             .task { viewModel.load() }
         }
+    }
+
+    private var filterBar: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                filterButton("Buy Now", isActive: viewModel.showBuyNowOnly) {
+                    viewModel.showBuyNowOnly.toggle()
+                }
+
+                filterButton("No Bids", isActive: viewModel.showNoBidsOnly) {
+                    viewModel.showNoBidsOnly.toggle()
+                }
+
+                filterButton("Under 50k km", isActive: viewModel.showUnder50kKmOnly) {
+                    viewModel.showUnder50kKmOnly.toggle()
+                }
+
+                Menu {
+                    Button("All Body Styles") {
+                        viewModel.selectedBodyStyle = nil
+                    }
+
+                    ForEach(viewModel.bodyStyleOptions, id: \.self) { bodyStyle in
+                        Button(bodyStyle.capitalized) {
+                            viewModel.selectedBodyStyle = bodyStyle
+                        }
+                    }
+                } label: {
+                    Label(viewModel.selectedBodyStyle?.capitalized ?? "Body Style", systemImage: "car")
+                        .font(.caption.weight(.medium))
+                }
+                .buttonStyle(.bordered)
+                .tint(viewModel.selectedBodyStyle == nil ? .secondary : .blue)
+            }
+            .padding(.horizontal)
+            .padding(.vertical, 8)
+        }
+    }
+
+    private func filterButton(_ title: String, isActive: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(title)
+                .font(.caption.weight(.medium))
+        }
+        .buttonStyle(.bordered)
+        .tint(isActive ? .blue : .secondary)
     }
 }

@@ -4,6 +4,10 @@ class InventoryViewModel: ObservableObject {
     @Published private(set) var baseVehicles: [Vehicle] = []
     @Published var searchText = ""
     @Published var sortOption: InventorySortOption = .yearNewest
+    @Published var showBuyNowOnly = false
+    @Published var showNoBidsOnly = false
+    @Published var showUnder50kKmOnly = false
+    @Published var selectedBodyStyle: String?
     @Published private(set) var loadError: String?
 
     private let bidStore: BidStore
@@ -18,8 +22,18 @@ class InventoryViewModel: ObservableObject {
     }
 
     var vehicles: [Vehicle] {
-        let filtered = searchText.isEmpty ? baseVehicles : baseVehicles.filter(matches)
+        let filtered = baseVehicles.filter(matchesSearch).filter(matchesFilters)
         return sorted(filtered)
+    }
+
+    var bodyStyleOptions: [String] {
+        Array(Set(baseVehicles.map(\.bodyStyle))).sorted {
+            $0.localizedCaseInsensitiveCompare($1) == .orderedAscending
+        }
+    }
+
+    var hasActiveFilters: Bool {
+        showBuyNowOnly || showNoBidsOnly || showUnder50kKmOnly || selectedBodyStyle != nil
     }
 
     func load() {
@@ -32,13 +46,43 @@ class InventoryViewModel: ObservableObject {
         }
     }
 
-    private func matches(_ vehicle: Vehicle) -> Bool {
+    private func matchesSearch(_ vehicle: Vehicle) -> Bool {
         let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-        return vehicle.make.lowercased().contains(query)
-            || vehicle.model.lowercased().contains(query)
-            || String(vehicle.year).contains(query)
-            || vehicle.city.lowercased().contains(query)
-            || vehicle.trim.lowercased().contains(query)
+        guard !query.isEmpty else { return true }
+
+        let searchTerms = query.split(separator: " ").map(String.init)
+        let searchableFields = [
+            vehicle.make,
+            vehicle.model,
+            String(vehicle.year),
+            vehicle.city,
+            vehicle.trim
+        ].map { $0.lowercased() }
+
+        return searchTerms.allSatisfy { term in
+            searchableFields.contains { $0.contains(term) }
+        }
+    }
+
+    private func matchesFilters(_ vehicle: Vehicle) -> Bool {
+        if showBuyNowOnly && vehicle.buyNowPrice == nil {
+            return false
+        }
+
+        if showNoBidsOnly && currentBidCount(vehicle) != 0 {
+            return false
+        }
+
+        if showUnder50kKmOnly && vehicle.odometerKm >= 50_000 {
+            return false
+        }
+
+        if let selectedBodyStyle,
+           vehicle.bodyStyle.localizedCaseInsensitiveCompare(selectedBodyStyle) != .orderedSame {
+            return false
+        }
+
+        return true
     }
 
     private func sorted(_ list: [Vehicle]) -> [Vehicle] {
@@ -54,5 +98,9 @@ class InventoryViewModel: ObservableObject {
 
     private func currentBid(_ vehicle: Vehicle) -> Int {
         bidStore.state(for: vehicle.id)?.currentBid ?? vehicle.currentBid ?? vehicle.startingBid
+    }
+
+    private func currentBidCount(_ vehicle: Vehicle) -> Int {
+        bidStore.state(for: vehicle.id)?.bidCount ?? vehicle.bidCount
     }
 }

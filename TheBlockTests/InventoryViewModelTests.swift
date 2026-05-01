@@ -15,10 +15,13 @@ final class InventoryViewModelTests: XCTestCase {
                 make: "Mazda",
                 model: "Mazda3",
                 trim: "GT Turbo",
+                bodyStyle: "Sedan",
                 odometerKm: 45_000,
                 conditionGrade: 4.1,
                 city: "Toronto",
+                auctionStart: Date(timeIntervalSince1970: 0),
                 startingBid: 12_000,
+                buyNowPrice: 16_000,
                 currentBid: 13_500,
                 bidCount: 2
             ),
@@ -28,10 +31,13 @@ final class InventoryViewModelTests: XCTestCase {
                 make: "Ford",
                 model: "F-150",
                 trim: "Lariat",
+                bodyStyle: "Truck",
                 odometerKm: 85_000,
                 conditionGrade: 3.7,
                 city: "Calgary",
+                auctionStart: Date(timeIntervalSince1970: 2_000),
                 startingBid: 20_000,
+                buyNowPrice: nil,
                 currentBid: nil,
                 bidCount: 0
             ),
@@ -41,15 +47,21 @@ final class InventoryViewModelTests: XCTestCase {
                 make: "Honda",
                 model: "Civic",
                 trim: "Touring",
+                bodyStyle: "Sedan",
                 odometerKm: 18_000,
                 conditionGrade: 4.8,
                 city: "Vancouver",
+                auctionStart: Date(timeIntervalSince1970: 0),
                 startingBid: 15_000,
+                buyNowPrice: nil,
                 currentBid: 18_000,
                 bidCount: 4
             )
         ]
-        viewModel = InventoryViewModel(bidStore: bidStore) { vehicles }
+        viewModel = InventoryViewModel(
+            bidStore: bidStore,
+            vehicleLoader: { vehicles }
+        )
         viewModel.load()
     }
 
@@ -118,6 +130,11 @@ final class InventoryViewModelTests: XCTestCase {
         XCTAssertEqual(viewModel.vehicles.map(\.id), ["honda-civic"])
     }
 
+    func testSearchMatchesMultipleKeywordsAcrossFields() {
+        viewModel.searchText = "2023 civic"
+        XCTAssertEqual(viewModel.vehicles.map(\.id), ["honda-civic"])
+    }
+
     func testSearchIsCaseInsensitive() {
         viewModel.searchText = "MAZDA"
         let upper = viewModel.vehicles.count
@@ -135,6 +152,39 @@ final class InventoryViewModelTests: XCTestCase {
     func testSearchWithNoMatchReturnsEmpty() {
         viewModel.searchText = "zzznomatch"
         XCTAssertTrue(viewModel.vehicles.isEmpty)
+    }
+
+    // MARK: - Filters
+
+    func testBodyStyleOptionsAreSorted() {
+        XCTAssertEqual(viewModel.bodyStyleOptions, ["Sedan", "Truck"])
+    }
+
+    func testBuyNowFilterReturnsVehiclesWithBuyNowPrice() {
+        viewModel.showBuyNowOnly = true
+        XCTAssertEqual(viewModel.vehicles.map(\.id), ["mazda-3"])
+    }
+
+    func testNoBidsFilterReturnsVehiclesWithNoBids() {
+        viewModel.showNoBidsOnly = true
+        XCTAssertEqual(viewModel.vehicles.map(\.id), ["ford-f150"])
+    }
+
+    func testUnder50kKmFilterReturnsLowMileageVehicles() {
+        viewModel.showUnder50kKmOnly = true
+        XCTAssertEqual(viewModel.vehicles.map(\.id), ["honda-civic", "mazda-3"])
+    }
+
+    func testBodyStyleFilterReturnsMatchingVehicles() {
+        viewModel.selectedBodyStyle = "Truck"
+        XCTAssertEqual(viewModel.vehicles.map(\.id), ["ford-f150"])
+    }
+
+    func testFiltersComposeWithSearch() {
+        viewModel.showUnder50kKmOnly = true
+        viewModel.selectedBodyStyle = "Sedan"
+        viewModel.searchText = "honda"
+        XCTAssertEqual(viewModel.vehicles.map(\.id), ["honda-civic"])
     }
 
     // MARK: - Sort
@@ -184,10 +234,13 @@ final class InventoryViewModelTests: XCTestCase {
         make: String,
         model: String,
         trim: String,
+        bodyStyle: String,
         odometerKm: Int,
         conditionGrade: Double,
         city: String,
+        auctionStart: Date,
         startingBid: Int,
+        buyNowPrice: Int?,
         currentBid: Int?,
         bidCount: Int
     ) -> Vehicle {
@@ -198,7 +251,7 @@ final class InventoryViewModelTests: XCTestCase {
             make: make,
             model: model,
             trim: trim,
-            bodyStyle: "Sedan",
+            bodyStyle: bodyStyle,
             exteriorColor: "Blue",
             interiorColor: "Black",
             engine: "2.0L",
@@ -214,10 +267,10 @@ final class InventoryViewModelTests: XCTestCase {
             city: city,
             sellingDealership: "The Block",
             lot: "LOT-\(id)",
-            auctionStart: Date(timeIntervalSince1970: 0),
+            auctionStart: auctionStart,
             startingBid: startingBid,
             reservePrice: nil,
-            buyNowPrice: nil,
+            buyNowPrice: buyNowPrice,
             images: [],
             currentBid: currentBid,
             bidCount: bidCount
