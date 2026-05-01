@@ -14,6 +14,10 @@ struct VehicleDetailView: View {
     private var bidState: BidState? { bidStore.state(for: vehicle.id) }
     private var currentBid: Int { bidState?.currentBid ?? vehicle.currentBid ?? vehicle.startingBid }
     private var bidCount: Int { bidState?.bidCount ?? vehicle.bidCount }
+    private var yearText: String { String(vehicle.year) }
+    private var auctionStartText: String {
+        vehicle.auctionStart.formatted(date: .abbreviated, time: .shortened)
+    }
 
     var body: some View {
         ScrollView {
@@ -34,7 +38,7 @@ struct VehicleDetailView: View {
                 .padding()
             }
         }
-        .navigationTitle("\(vehicle.year) \(vehicle.make) \(vehicle.model)")
+        .navigationTitle("\(yearText) \(vehicle.make) \(vehicle.model)")
         .navigationBarTitleDisplayMode(.inline)
     }
 
@@ -42,7 +46,7 @@ struct VehicleDetailView: View {
 
     private var headerSection: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text("\(vehicle.year) \(vehicle.make) \(vehicle.model)")
+            Text("\(yearText) \(vehicle.make) \(vehicle.model)")
                 .font(.title2.weight(.bold))
             Text(vehicle.trim)
                 .font(.subheadline)
@@ -66,9 +70,18 @@ struct VehicleDetailView: View {
                     .foregroundStyle(.secondary)
             }
 
+            LabeledContent("Auction Starts", value: auctionStartText)
+
             if let buyNow = vehicle.buyNowPrice {
-                Text("Buy Now: $\(buyNow.formatted())")
-                    .font(.subheadline)
+                Button("Buy Now for $\(buyNow.formatted())") {
+                    // Future work: complete purchase flow.
+                }
+                .buttonStyle(.bordered)
+            }
+
+            if !viewModel.hasAuctionStarted {
+                Text("Bidding opens when the auction starts.")
+                    .font(.caption)
                     .foregroundStyle(.secondary)
             }
 
@@ -82,7 +95,7 @@ struct VehicleDetailView: View {
                     viewModel.placeBid()
                 }
                 .buttonStyle(.borderedProminent)
-                .disabled(viewModel.bidInput.isEmpty)
+                .disabled(viewModel.bidInput.isEmpty || !viewModel.hasAuctionStarted)
             }
 
             if let error = viewModel.bidError {
@@ -152,6 +165,7 @@ struct VehicleDetailView: View {
             LabeledContent("Seller", value: vehicle.sellingDealership)
             LabeledContent("Location", value: "\(vehicle.city), \(vehicle.province)")
             LabeledContent("Lot", value: vehicle.lot)
+            LabeledContent("VIN", value: vehicle.vin)
         }
     }
 }

@@ -59,6 +59,29 @@ final class VehicleDetailViewModelTests: XCTestCase {
         XCTAssertEqual(bidStore.state(for: vehicle.id)?.bidCount, before + 1)
     }
 
+    func testBidBeforeAuctionStartSetsError() {
+        vehicle = makeVehicle(
+            currentBid: 10_000,
+            bidCount: 3,
+            auctionStart: Date(timeIntervalSince1970: 2_000)
+        )
+        bidStore = BidStore()
+        bidStore.seed(from: [vehicle])
+        viewModel = VehicleDetailViewModel(
+            vehicle: vehicle,
+            bidStore: bidStore,
+            currentDate: { Date(timeIntervalSince1970: 1_000) }
+        )
+
+        viewModel.bidInput = "11000"
+        viewModel.placeBid()
+
+        XCTAssertNotNil(viewModel.bidError)
+        XCTAssertFalse(viewModel.didPlaceBid)
+        XCTAssertEqual(bidStore.state(for: vehicle.id)?.currentBid, 10_000)
+        XCTAssertEqual(bidStore.state(for: vehicle.id)?.bidCount, 3)
+    }
+
     // MARK: - Invalid bid
 
     func testNonNumericInputSetsError() {
@@ -92,7 +115,11 @@ final class VehicleDetailViewModelTests: XCTestCase {
         XCTAssertFalse(viewModel.didPlaceBid)
     }
 
-    private func makeVehicle(currentBid: Int?, bidCount: Int) -> Vehicle {
+    private func makeVehicle(
+        currentBid: Int?,
+        bidCount: Int,
+        auctionStart: Date = Date(timeIntervalSince1970: 0)
+    ) -> Vehicle {
         Vehicle(
             id: "vehicle-1",
             vin: "VIN-vehicle-1",
@@ -116,7 +143,7 @@ final class VehicleDetailViewModelTests: XCTestCase {
             city: "Toronto",
             sellingDealership: "The Block",
             lot: "LOT-vehicle-1",
-            auctionStart: Date(timeIntervalSince1970: 0),
+            auctionStart: auctionStart,
             startingBid: 8_000,
             reservePrice: nil,
             buyNowPrice: nil,

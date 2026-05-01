@@ -8,13 +8,29 @@ class VehicleDetailViewModel: ObservableObject {
     @Published private(set) var didPlaceBid = false
 
     private let bidStore: BidStore
+    private let currentDate: () -> Date
 
-    init(vehicle: Vehicle, bidStore: BidStore) {
+    init(
+        vehicle: Vehicle,
+        bidStore: BidStore,
+        currentDate: @escaping () -> Date = Date.init
+    ) {
         self.vehicle = vehicle
         self.bidStore = bidStore
+        self.currentDate = currentDate
+    }
+
+    var hasAuctionStarted: Bool {
+        vehicle.auctionStart <= currentDate()
     }
 
     func placeBid() {
+        guard hasAuctionStarted else {
+            bidError = "Bidding has not opened yet"
+            didPlaceBid = false
+            return
+        }
+
         guard let amount = Int(bidInput) else {
             bidError = "Please enter a valid amount"
             return
