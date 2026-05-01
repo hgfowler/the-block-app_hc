@@ -36,6 +36,8 @@ A brief description of your project and your approach.
 
 What choices did you make and why? What tradeoffs did you consider?
 
+- I preserved the provided `vehicles.json` data as-is. The placeholder image service returns SVGs when no format is specified, so the app normalizes those URLs to PNG at display time instead of editing the source data.
+
 ## Testing
 
 What you tested and how.

@@ -24,6 +24,7 @@
 		A000000000000000000054 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A000000000000000000034 /* Assets.xcassets */; };
 		A000000000000000000055 /* InventoryViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A000000000000000000036 /* InventoryViewModelTests.swift */; };
 		A000000000000000000056 /* VehicleDetailViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A000000000000000000037 /* VehicleDetailViewModelTests.swift */; };
+		A000000000000000000057 /* ImageURL.swift in Sources */ = {isa = PBXBuildFile; fileRef = A000000000000000000035 /* ImageURL.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,6 +53,7 @@
 		A000000000000000000032 /* CurrencyText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyText.swift; sourceTree = "<group>"; };
 		A000000000000000000033 /* Formatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formatters.swift; sourceTree = "<group>"; };
 		A000000000000000000034 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A000000000000000000035 /* ImageURL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageURL.swift; sourceTree = "<group>"; };
 		A000000000000000000036 /* InventoryViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InventoryViewModelTests.swift; sourceTree = "<group>"; };
 		A000000000000000000037 /* VehicleDetailViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VehicleDetailViewModelTests.swift; sourceTree = "<group>"; };
 		A000000000000000000038 /* TheBlock.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TheBlock.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -160,6 +162,7 @@
 			children = (
 				A000000000000000000032 /* CurrencyText.swift */,
 				A000000000000000000033 /* Formatters.swift */,
+				A000000000000000000035 /* ImageURL.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -286,6 +289,7 @@
 				A000000000000000000050 /* VehicleRepository.swift in Sources */,
 				A000000000000000000052 /* CurrencyText.swift in Sources */,
 				A000000000000000000053 /* Formatters.swift in Sources */,
+				A000000000000000000057 /* ImageURL.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

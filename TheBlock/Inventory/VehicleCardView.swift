@@ -6,7 +6,7 @@ struct VehicleCardView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            AsyncImage(url: URL(string: vehicle.images.first ?? "")) { phase in
+            AsyncImage(url: displayImageURL(from: vehicle.images.first ?? "")) { phase in
                 switch phase {
                 case .success(let image):
                     image.resizable().aspectRatio(contentMode: .fill)

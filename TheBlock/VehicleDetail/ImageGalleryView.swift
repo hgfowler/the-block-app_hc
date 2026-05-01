@@ -6,7 +6,7 @@ struct ImageGalleryView: View {
     var body: some View {
         TabView {
             ForEach(imageURLs, id: \.self) { urlString in
-                AsyncImage(url: URL(string: urlString)) { phase in
+                AsyncImage(url: displayImageURL(from: urlString)) { phase in
                     switch phase {
                     case .success(let image):
                         image.resizable().aspectRatio(contentMode: .fill)
