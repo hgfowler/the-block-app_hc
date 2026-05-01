@@ -18,7 +18,7 @@ struct VehicleCardView: View {
             .clipped()
 
             VStack(alignment: .leading, spacing: 5) {
-                Text("\(vehicle.year) \(vehicle.make)")
+                Text("\(yearText) \(vehicle.make)")
                     .font(.caption)
                     .foregroundStyle(.secondary)
 
@@ -67,5 +67,9 @@ struct VehicleCardView: View {
 
     private var bidCount: Int {
         bidState?.bidCount ?? vehicle.bidCount
+    }
+
+    private var yearText: String {
+        String(vehicle.year)
     }
 }
