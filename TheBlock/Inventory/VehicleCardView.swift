@@ -5,7 +5,7 @@ struct VehicleCardView: View {
     let bidState: BidState?
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
+        HStack(alignment: .top, spacing: 12) {
             AsyncImage(url: displayImageURL(from: vehicle.images.first ?? "")) { phase in
                 switch phase {
                 case .success(let image):
@@ -14,17 +14,30 @@ struct VehicleCardView: View {
                     Rectangle().fill(Color(.systemGray5))
                 }
             }
-            .frame(height: 110)
+            .frame(width: 128, height: 96)
             .clipped()
 
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 5) {
                 Text("\(vehicle.year) \(vehicle.make)")
                     .font(.caption)
                     .foregroundStyle(.secondary)
 
-                Text(vehicle.model)
+                Text("\(vehicle.model) \(vehicle.trim)")
                     .font(.subheadline.weight(.semibold))
                     .lineLimit(1)
+
+                Text("\(vehicle.city), \(vehicle.province)")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+
+                HStack {
+                    Text("\(vehicle.odometerKm.formatted()) km")
+                    Spacer()
+                    Text(String(format: "%.1f / 5", vehicle.conditionGrade))
+                }
+                .font(.caption2)
+                .foregroundStyle(.secondary)
 
                 HStack(alignment: .firstTextBaseline) {
                     Text("$\(currentBid.formatted())")
@@ -34,9 +47,15 @@ struct VehicleCardView: View {
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
+
+                if let buyNow = vehicle.buyNowPrice {
+                    Text("Buy Now $\(buyNow.formatted())")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.blue)
+                }
             }
-            .padding(10)
         }
+        .padding(10)
         .background(Color(.systemBackground))
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .shadow(color: .black.opacity(0.08), radius: 6, x: 0, y: 2)

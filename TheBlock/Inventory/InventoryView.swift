@@ -8,7 +8,7 @@ struct InventoryView: View {
         _viewModel = StateObject(wrappedValue: InventoryViewModel(bidStore: bidStore))
     }
 
-    private let columns = [GridItem(.flexible()), GridItem(.flexible())]
+    private let columns = [GridItem(.flexible())]
 
     var body: some View {
         NavigationStack {
