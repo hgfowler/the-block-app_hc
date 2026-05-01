@@ -55,19 +55,6 @@ struct InventoryView: View {
             }
             .navigationTitle("The Block")
             .searchable(text: $viewModel.searchText, prompt: "Search make, model, city…")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Menu {
-                        Picker("Sort by", selection: $viewModel.sortOption) {
-                            ForEach(InventorySortOption.allCases) { option in
-                                Text(option.rawValue).tag(option)
-                            }
-                        }
-                    } label: {
-                        Label("Sort", systemImage: "arrow.up.arrow.down")
-                    }
-                }
-            }
             .task { viewModel.load() }
         }
     }
@@ -75,6 +62,19 @@ struct InventoryView: View {
     private var filterBar: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
+                Menu {
+                    Picker("Sort by", selection: $viewModel.sortOption) {
+                        ForEach(InventorySortOption.allCases) { option in
+                            Text(option.rawValue).tag(option)
+                        }
+                    }
+                } label: {
+                    Label("Sort", systemImage: "arrow.up.arrow.down")
+                        .font(.caption.weight(.medium))
+                }
+                .buttonStyle(.bordered)
+                .tint(.secondary)
+
                 filterButton("Buy Now", isActive: viewModel.showBuyNowOnly) {
                     viewModel.showBuyNowOnly.toggle()
                 }
