@@ -11,7 +11,7 @@ class BidStore: ObservableObject {
     func seed(from vehicles: [Vehicle]) {
         for vehicle in vehicles {
             bids[vehicle.id] = BidState(
-                currentBid: vehicle.currentBid,
+                currentBid: vehicle.currentBid ?? vehicle.startingBid,
                 bidCount: vehicle.bidCount
             )
         }

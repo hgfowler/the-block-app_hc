@@ -25,9 +25,9 @@ struct Vehicle: Codable, Identifiable {
     let lot: String
     let auctionStart: Date
     let startingBid: Int
-    let reservePrice: Int
+    let reservePrice: Int?
     let buyNowPrice: Int?
     let images: [String]
-    let currentBid: Int
+    let currentBid: Int?
     let bidCount: Int
 }

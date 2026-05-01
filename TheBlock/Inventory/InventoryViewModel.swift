@@ -48,6 +48,6 @@ class InventoryViewModel: ObservableObject {
     }
 
     private func currentBid(_ vehicle: Vehicle) -> Int {
-        bidStore.state(for: vehicle.id)?.currentBid ?? vehicle.currentBid
+        bidStore.state(for: vehicle.id)?.currentBid ?? vehicle.currentBid ?? vehicle.startingBid
     }
 }

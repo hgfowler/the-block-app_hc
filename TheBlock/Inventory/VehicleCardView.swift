@@ -43,7 +43,7 @@ struct VehicleCardView: View {
     }
 
     private var currentBid: Int {
-        bidState?.currentBid ?? vehicle.currentBid
+        bidState?.currentBid ?? vehicle.currentBid ?? vehicle.startingBid
     }
 
     private var bidCount: Int {
