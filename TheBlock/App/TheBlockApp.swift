@@ -6,7 +6,7 @@ struct TheBlockApp: App {
 
     var body: some Scene {
         WindowGroup {
-            InventoryView()
+            InventoryView(bidStore: bidStore)
                 .environmentObject(bidStore)
         }
     }
