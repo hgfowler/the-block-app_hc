@@ -7,9 +7,14 @@ class InventoryViewModel: ObservableObject {
     @Published private(set) var loadError: String?
 
     private let bidStore: BidStore
+    private let vehicleLoader: () throws -> [Vehicle]
 
-    init(bidStore: BidStore) {
+    init(
+        bidStore: BidStore,
+        vehicleLoader: @escaping () throws -> [Vehicle] = VehicleRepository.loadAll
+    ) {
         self.bidStore = bidStore
+        self.vehicleLoader = vehicleLoader
     }
 
     var vehicles: [Vehicle] {
@@ -19,7 +24,7 @@ class InventoryViewModel: ObservableObject {
 
     func load() {
         do {
-            baseVehicles = try VehicleRepository.loadAll()
+            baseVehicles = try vehicleLoader()
             bidStore.seed(from: baseVehicles)
             loadError = nil
         } catch {
