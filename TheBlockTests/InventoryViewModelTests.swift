@@ -76,6 +76,15 @@ final class InventoryViewModelTests: XCTestCase {
         XCTAssertEqual(bidStore.state(for: "ford-f150")?.bidCount, 0)
     }
 
+    func testLoadDoesNotOverwriteExistingBids() {
+        bidStore.placeBid(vehicleID: "mazda-3", amount: 25_000)
+
+        viewModel.load()
+
+        XCTAssertEqual(bidStore.state(for: "mazda-3")?.currentBid, 25_000)
+        XCTAssertEqual(bidStore.state(for: "mazda-3")?.bidCount, 3)
+    }
+
     func testLoadFailureSetsError() {
         viewModel = InventoryViewModel(bidStore: bidStore) {
             throw TestError.loadFailed
